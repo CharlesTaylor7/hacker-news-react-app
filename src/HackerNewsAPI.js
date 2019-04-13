@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { Observable, distinctUntilChanged, interval, from, map } from 'rxjs';
 
 const rootURL = 'https://hacker-news.firebaseio.com/v0';
 const suffix = '.json';
@@ -27,24 +27,7 @@ export const getRoot = async id => {
   }
 };
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function pollEvery(interval, query, onChange) {
-  let previous = {};
-  while (true) {
-    const latest = await query();
-    if (latest !== previous) {
-      previous = latest;
-      onChange(latest);
-    }
-    await sleep(interval);
-  }
-}
-
-export const usePollForMaxItem = onChange => {
-  useEffect(() => {
-    pollEvery(3000, getLatestId, onChange);
-  }, []);
-};
+export const latestItem$ = interval(3000).pipe(
+  map(() => getLatestId()),
+  distinctUntilChanged()
+);

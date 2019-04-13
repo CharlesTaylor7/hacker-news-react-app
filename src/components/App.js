@@ -9,7 +9,10 @@ import { SortedMap } from 'immutable-sorted';
 let count = 0;
 
 export const App = () => {
-  const [latestId, setLatestId] = useState(16809398);
+  const [latestId, setLatestId] = useState(null);
+  useEffect(() => {
+    HN.latestItem$.subscribe(setLatestId);
+  }, []);
   // const previousId = useRef(null);
 
   // useEffect(() => {

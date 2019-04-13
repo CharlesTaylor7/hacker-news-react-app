@@ -1,9 +1,10 @@
-import { Observable, distinctUntilChanged, interval, from, map } from 'rxjs';
+import { Observable, interval } from 'rxjs';
+import { distinctUntilChanged, map, flatMap } from 'rxjs/operators';
 
 const rootURL = 'https://hacker-news.firebaseio.com/v0';
 const suffix = '.json';
 
-export const getLatestId = () =>
+export const getLatestId = (): Promise<number> =>
   fetch(`${rootURL}/maxitem${suffix}`).then(response => response.json());
 
 export const getItem = itemId =>
@@ -27,7 +28,7 @@ export const getRoot = async id => {
   }
 };
 
-export const latestItem$ = interval(3000).pipe(
-  map(() => getLatestId()),
+export const latestItem$: Observable<number> = interval(3000).pipe(
+  flatMap(() => getLatestId()),
   distinctUntilChanged()
 );
